@@ -3,7 +3,7 @@
 ### 使用方式:java
 **[注]：** 需在 *src/main/resources* 目录创建 **job.properties** 文件。
 内容如下：
-```java
+```xml
 #值为项目中作业类所在的包名
 context.scan.base-package = com.ane56.job
 ```
@@ -53,7 +53,7 @@ context.scan.base-package = com.ane56.job
 
 ### 使用方式:Spring
 **[注]：** 需在 *src/main/resources* 目录创建 **job.properties** 文件。
-```java
+```xml
 #值为项目中作业类所在的包名
 context.scan.base-package = com.ane56.job
 ```
