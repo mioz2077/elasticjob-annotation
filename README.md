@@ -1,5 +1,7 @@
 ## elastic-job 注解实现
-
+-----
+项目示例应用地址：[http://101.95.139.62:9838/architecture/elastic-job-sample/tree/master/elasticjob-annotation-sample](http://101.95.139.62:9838/architecture/elastic-job-sample/tree/master/elasticjob-annotation-sample)
+-----
 ### 使用方式:java
 **[注]：** 需在 *src/main/resources* 目录创建 **job.properties** 文件。
 内容如下：
