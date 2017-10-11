@@ -126,19 +126,21 @@ public class ScheduleBuilder {
 			LiteJobConfiguration liteJobConfig = liteJobConfigBuilder.build();
 			
 			ElasticJobListener[] jobListeners = createJobListeners(jobConfig);
+			JobScheduler jobScheduler = null;
 			if (jobEventConfig == null) {
-				if (jobListeners == null) {
-					new JobScheduler(registryCenter, liteJobConfig).init();;
+				if (jobListeners == null || jobListeners.length <= 0) {
+					jobScheduler = new JobScheduler(registryCenter, liteJobConfig);
 				} else {
-					new JobScheduler(registryCenter, liteJobConfig, jobListeners).init();
+					jobScheduler = new JobScheduler(registryCenter, liteJobConfig, jobListeners);
 				}
 			} else {
-				if (jobListeners == null) {
-					new JobScheduler(registryCenter, liteJobConfig, jobEventConfig).init();
+				if (jobListeners == null || jobListeners.length <= 0) {
+					jobScheduler = new JobScheduler(registryCenter, liteJobConfig, jobEventConfig);
 				} else {
-					new JobScheduler(registryCenter, liteJobConfig, jobEventConfig, jobListeners).init();
+					jobScheduler = new JobScheduler(registryCenter, liteJobConfig, jobEventConfig, jobListeners);
 				}
 			}
+			jobScheduler.init();  // 初始化作业
 		}
 	}
 	
