@@ -59,5 +59,5 @@ context.scan.base-package = com.ane56.job
 ```
 在spring配置xml中添加bean配置，内容如下：
 ```xml
-	<beans id="ejMainClass" class="com.mioz.elasticjob.annotation.MainClass" />
+	<beans id="ejMainClass" class="com.mioz.elasticjob.annotation.Main" init-method="mian" />
 ```
