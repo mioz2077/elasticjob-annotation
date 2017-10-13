@@ -21,6 +21,7 @@ import com.dangdang.ddframe.job.config.script.ScriptJobConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
 import com.dangdang.ddframe.job.event.JobEventConfiguration;
 import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
+import com.dangdang.ddframe.job.exception.JobConfigurationException;
 import com.dangdang.ddframe.job.executor.handler.JobProperties.JobPropertiesEnum;
 import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
@@ -112,6 +113,9 @@ public class ScheduleBuilder {
 			} else if (DataflowJob.class.isAssignableFrom(clz)) {
 				jobTypeConfig = new DataflowJobConfiguration(coreConfig, clz.getCanonicalName(), jobConfig.streamingProcess());
 			} else if (ScriptJob.class.isAssignableFrom(clz)) {
+				if (Strings.isNullOrEmpty(jobConfig.scriptCommandLine())) {
+					throw new JobConfigurationException("Script类型作业 %s 没有配置 scriptCommandLine 属性，请检查并重新配置该作业", jobConfig.jobName());
+				}
 				jobTypeConfig = new ScriptJobConfiguration(coreConfig, jobConfig.scriptCommandLine());
 			} else {
 				// you'll never reach here
