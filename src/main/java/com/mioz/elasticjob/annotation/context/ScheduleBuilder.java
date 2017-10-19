@@ -56,8 +56,7 @@ public class ScheduleBuilder {
 	 */
 	public static void build() {
 		String _package = null;
-		try {
-			InputStream in = ScheduleBuilder.class.getClassLoader().getResourceAsStream(SCHEDULER_CONFIG_PATH);
+		try(InputStream in = ScheduleBuilder.class.getClassLoader().getResourceAsStream(SCHEDULER_CONFIG_PATH)) {
 			Properties prop = new Properties();
 			prop.load(in);
 			_package = prop.get(BASE_PACKAGE).toString();
