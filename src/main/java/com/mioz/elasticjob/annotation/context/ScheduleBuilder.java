@@ -31,9 +31,7 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.mioz.elasticjob.annotation.context.annotation.EventTraceDSConfig;
 import com.mioz.elasticjob.annotation.context.annotation.LiteJobConfig;
-import com.mioz.elasticjob.annotation.context.annotation.RegistryCenterConfig;
 import com.mioz.elasticjob.annotation.scan.ComponentScan;
 
 /**
@@ -50,14 +48,24 @@ public class ScheduleBuilder {
 	public static final String SCHEDULER_CONFIG_PATH = "job.properties";
 	
 	/**
+	 * 注册中心相关缺省配置
+	 */
+	private final static int DEFAULT_ZK_BASE_SLEEP_TIMEMS = 1000;
+	private final static int DEFAULT_ZK_MAX_SLEEP_TIMEMS = 3000;
+	private final static int DEFAULT_ZK_MAXRETRIES = 3;
+	private final static int DEFAULT_ZK_SESSIONTIMEOUTMS = 60000;
+	private final static int DEFAULT_ZK_CONNECTIONTIMEOUTMS = 15000;
+	
+	/**
 	 * Declare build: 构建作业. 
 	 * @author Bingjie Wei 
 	 * Date 2017年9月30日 下午4:23:14 void
 	 */
 	public static void build() {
 		String _package = null;
+		Properties prop = null;
 		try(InputStream in = ScheduleBuilder.class.getClassLoader().getResourceAsStream(SCHEDULER_CONFIG_PATH)) {
-			Properties prop = new Properties();
+			prop = new Properties();
 			prop.load(in);
 			_package = prop.get(BASE_PACKAGE).toString();
 		} catch (FileNotFoundException e) {
@@ -76,17 +84,17 @@ public class ScheduleBuilder {
 			}
 		}
 		
-		Set<Class<?>> zkconfigClasses = ComponentScan.filter(RegistryCenterConfig.class);
-		Preconditions.checkArgument(zkconfigClasses.size() > 0, "没有找到作业注册中心配置");
-		Class<?> configClass = zkconfigClasses.iterator().next();
-		RegistryCenterConfig registryCenterConfig = configClass.getAnnotation(RegistryCenterConfig.class);
-		CoordinatorRegistryCenter registryCenter = createRegistryCenter(registryCenterConfig);
+//		Set<Class<?>> zkconfigClasses = ComponentScan.filter(RegistryCenterConfig.class);
+//		Preconditions.checkArgument(zkconfigClasses.size() > 0, "没有找到作业注册中心配置");
+//		Class<?> configClass = zkconfigClasses.iterator().next();
+//		RegistryCenterConfig registryCenterConfig = configClass.getAnnotation(RegistryCenterConfig.class);
+		CoordinatorRegistryCenter registryCenter = createRegistryCenter(prop);
 		
-		EventTraceDSConfig eventTraceDSConfig = configClass.getAnnotation(EventTraceDSConfig.class);
-		JobEventConfiguration jobEventConfig = null;
-		if (eventTraceDSConfig != null) {
-			jobEventConfig = createJobEventConf(eventTraceDSConfig);
-		}
+//		EventTraceDSConfig eventTraceDSConfig = configClass.getAnnotation(EventTraceDSConfig.class);
+		JobEventConfiguration jobEventConfig = createJobEventConf(prop);
+//		if (eventTraceDSConfig != null) {
+//			jobEventConfig = createJobEventConf(eventTraceDSConfig);
+//		}
 		
 		Set<Class<?>> JobClasses = ComponentScan.filter(LiteJobConfig.class);
 		if(JobClasses.size() <= 0) {
@@ -151,18 +159,26 @@ public class ScheduleBuilder {
 	 * Declare createRegistryCenter: 创建注册中心配置. 
 	 * @author Bingjie Wei 
 	 * Date 2017年9月29日 下午3:31:20
-	 * @param registryCenterConfig
+	 * @param prop
 	 * @return CoordinatorRegistryCenter
 	 */
-	private static CoordinatorRegistryCenter createRegistryCenter(RegistryCenterConfig registryCenterConfig) {
-		ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(registryCenterConfig.serverLists(), registryCenterConfig.nameSpace());
+	private static CoordinatorRegistryCenter createRegistryCenter(Properties prop) {
+		ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(prop.getProperty("zk.serverLists"), prop.getProperty("zk.namespace"));
 		
-		zkConfig.setBaseSleepTimeMilliseconds(registryCenterConfig.baseSleepTimeMilliseconds());
-		zkConfig.setMaxSleepTimeMilliseconds(registryCenterConfig.maxSleepTimeMilliseconds());
-		zkConfig.setMaxRetries(registryCenterConfig.maxRetries());
-		zkConfig.setSessionTimeoutMilliseconds(registryCenterConfig.sessionTimeoutMilliseconds());
-		zkConfig.setConnectionTimeoutMilliseconds(registryCenterConfig.connectionTimeoutMilliseconds());
-		zkConfig.setDigest(registryCenterConfig.digest());
+		int baseSleepTimeMilliseconds = Strings.isNullOrEmpty(prop.getProperty("zk.baseSleepTimeMs")) ? DEFAULT_ZK_BASE_SLEEP_TIMEMS : Integer.valueOf(prop.getProperty("zk.baseSleepTimeMs"));
+		zkConfig.setBaseSleepTimeMilliseconds(baseSleepTimeMilliseconds);
+		int maxSleepTimeMilliseconds = Strings.isNullOrEmpty(prop.getProperty("zk.maxSleepTimeMs")) ? DEFAULT_ZK_MAX_SLEEP_TIMEMS : Integer.valueOf(prop.getProperty("zk.maxSleepTimeMs"));;
+		zkConfig.setMaxSleepTimeMilliseconds(maxSleepTimeMilliseconds);
+		int maxRetries = Strings.isNullOrEmpty(prop.getProperty("zk.maxRetries")) ? DEFAULT_ZK_MAXRETRIES : Integer.valueOf(prop.getProperty("zk.maxRetries"));
+		zkConfig.setMaxRetries(maxRetries);
+		int sessionTimeoutMs = Strings.isNullOrEmpty(prop.getProperty("zk.sessionTimeoutMs")) ? DEFAULT_ZK_SESSIONTIMEOUTMS : Integer.valueOf(prop.getProperty("zk.sessionTimeoutMs"));;
+		zkConfig.setSessionTimeoutMilliseconds(sessionTimeoutMs);
+		int connectionTimeoutMs = Strings.isNullOrEmpty(prop.getProperty("zk.connectionTimeoutMs")) ? DEFAULT_ZK_CONNECTIONTIMEOUTMS : Integer.valueOf(prop.getProperty("zk.connectionTimeoutMs"));;
+		zkConfig.setConnectionTimeoutMilliseconds(connectionTimeoutMs);
+		String digest = prop.getProperty("zk.digest");
+		if (!Strings.isNullOrEmpty(digest)) {
+			zkConfig.setDigest(digest);
+		}
 		
 		CoordinatorRegistryCenter regCenter = new ZookeeperRegistryCenter(zkConfig);
 		regCenter.init();
@@ -173,15 +189,22 @@ public class ScheduleBuilder {
 	 * Declare createJobEventConf: 定义日志数据库事件溯源配置. 
 	 * @author Bingjie Wei 
 	 * Date 2017年9月29日 下午3:28:34
-	 * @param eventTraceDSConfig
+	 * @param prop
 	 * @return JobEventConfiguration
 	 */
-	private static JobEventConfiguration createJobEventConf(EventTraceDSConfig eventTraceDSConfig) {
+	private static JobEventConfiguration createJobEventConf(Properties prop) {
 		BasicDataSource result = new BasicDataSource();
-		result.setDriverClassName(eventTraceDSConfig.rdbDriver());
-		result.setUrl(eventTraceDSConfig.rdbUrl());
-		result.setUsername(eventTraceDSConfig.rdbUsername());
-		result.setPassword(eventTraceDSConfig.rdbPasswd());
+		String driver = prop.getProperty("event.rdb.driver");
+		String url = prop.getProperty("event.rdb.url");
+		String username = prop.getProperty("event.rdb.username");
+		String passwd = prop.getProperty("event.rdb.passwd");
+		if ((driver == null) || (url == null) || (username == null) || (passwd == null)) {
+			return null;
+		}
+		result.setDriverClassName(driver);
+		result.setUrl(url);
+		result.setUsername(username);
+		result.setPassword(passwd);
 		return new JobEventRdbConfiguration(result);
 	}
 	
