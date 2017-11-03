@@ -23,14 +23,16 @@ public class ComponentScan {
 	 * @return 过滤后的类
 	 */
 	public static Set<Class<?>> filter(Class<? extends Annotation> annotationClass) {
-		if(classes == null) 
+		if(classes == null) {
 			classes = new LinkedHashSet<Class<?>>();
+		}
 		
 		if(classes.size() > 0) {
 			Set<Class<?>> annClasses = new LinkedHashSet<Class<?>>();
 			for(Class<?> clz : classes) {
-				if(clz.isAnnotationPresent(annotationClass)) 
+				if(clz.isAnnotationPresent(annotationClass)) {
 					annClasses.add(clz);
+				}
 			}
 
 			return annClasses;
@@ -51,8 +53,9 @@ public class ComponentScan {
 			return ;
 		}
 		
-		if(classes == null)
+		if(classes == null) {
 			classes = new LinkedHashSet<Class<?>>();
+		}
 		
 		classes.addAll(getClasses(packageName));
 	}
@@ -64,8 +67,9 @@ public class ComponentScan {
      * @return a set of all classes contained in the given package.
      */
     private static Set<Class<?>> getClasses(String packageName) {
-    	if(LOG.isDebugEnabled())
+    	if(LOG.isDebugEnabled()) {
     		LOG.debug("开始扫描包: " + packageName);
+    	}
     	
         return getClasses(new ResolverUtil.IsA(Object.class), packageName);
     }
@@ -79,11 +83,13 @@ public class ComponentScan {
      * @return a set of all classes contained in the given package.
      */
     private static Set<Class<?>> getClasses(ResolverUtil.Test test, String packageName) {
-    	if(test == null)
+    	if(test == null) {
     		throw new IllegalArgumentException("Parameter 'test' must not be null");
+    	}
     	
-    	if(packageName == null)
+    	if(packageName == null) {
     		throw new IllegalArgumentException("Parameter 'packageName' must not be null");
+    	}
     	
         return new ResolverUtil<Object>().find(test, packageName).getClasses();
     }

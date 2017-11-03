@@ -127,8 +127,9 @@ public class DefaultVFS extends VFS {
 
         // The URL prefix to use when recursively listing child resources
         String prefix = url.toExternalForm();
-        if (!prefix.endsWith("/"))
-          prefix = prefix + "/";
+        if (!prefix.endsWith("/")) {
+        	prefix = prefix + "/";
+        }
 
         // Iterate over immediate children, adding files and recursing into directories
         for (String child : children) {
@@ -142,8 +143,9 @@ public class DefaultVFS extends VFS {
       return resources;
     } finally {
       try {
-        if (is != null)
-          is.close();
+        if (is != null) {
+        	is.close();
+        }
       } catch (Exception e) {
       }
     }
@@ -160,10 +162,12 @@ public class DefaultVFS extends VFS {
    */
   protected List<String> listResources(JarInputStream jar, String path) throws IOException {
     // Include the leading and trailing slash when matching names
-    if (!path.startsWith("/"))
-      path = "/" + path;
-    if (!path.endsWith("/"))
-      path = path + "/";
+    if (!path.startsWith("/")) {
+    	path = "/" + path;
+    }
+    if (!path.endsWith("/")) {
+    	path = path + "/";
+    }
 
     // Iterate over the entries and collect those that begin with the requested path
     List<String> resources = new ArrayList<String>();
@@ -171,8 +175,9 @@ public class DefaultVFS extends VFS {
       if (!entry.isDirectory()) {
         // Add leading slash if it's missing
         String name = entry.getName();
-        if (!name.startsWith("/"))
-          name = "/" + name;
+        if (!name.startsWith("/")) {
+        	name = "/" + name;
+        }
 
         // Check file name
         if (name.startsWith(path)) {

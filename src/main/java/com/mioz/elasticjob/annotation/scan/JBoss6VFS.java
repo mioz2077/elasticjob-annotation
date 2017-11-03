@@ -109,8 +109,9 @@ public class JBoss6VFS extends VFS {
    * @param object The object reference to check for null.
    */
   protected static <T> T checkNotNull(T object) {
-    if (object == null)
-      setInvalid();
+    if (object == null) {
+    	setInvalid();
+    }
     return object;
   }
 
@@ -152,11 +153,13 @@ public class JBoss6VFS extends VFS {
   public List<String> list(URL url, String path) throws IOException {
     VirtualFile directory;
     directory = VFS.getChild(url);
-    if (directory == null)
-      return Collections.emptyList();
+    if (directory == null) {
+    	return Collections.emptyList();
+    }
 
-    if (!path.endsWith("/"))
-      path += "/";
+    if (!path.endsWith("/")) {
+    	path += "/";
+    }
 
     List<VirtualFile> children = directory.getChildren();
     List<String> names = new ArrayList<String>(children.size());
