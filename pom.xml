@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mioz</groupId>
 	<artifactId>elasticjob-annotation</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<name>elasticjob-annotation</name>
 	<description>elasticjob注解插件</description>
 
@@ -59,6 +59,11 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.31</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.2</version>
@@ -95,7 +100,6 @@
 				<version>3.0.0-M1</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<aggregate>true</aggregate>
 					<charset>UTF-8</charset>
 					<docencoding>UTF-8</docencoding>
 				</configuration>

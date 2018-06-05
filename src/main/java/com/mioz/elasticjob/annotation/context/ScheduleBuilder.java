@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
 
+import com.mioz.elasticjob.annotation.utils.SecurityUtil;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,11 +194,26 @@ public class ScheduleBuilder {
 	 * @return JobEventConfiguration
 	 */
 	private static JobEventConfiguration createJobEventConf(Properties prop) {
+		boolean isEncrypted = false;
+		if (!Strings.isNullOrEmpty(prop.getProperty("event.rdb.passwd.encrypted"))) {
+            isEncrypted = Boolean.valueOf(prop.getProperty("event.rdb.passwd.encrypted"));
+        }
+
 		BasicDataSource result = new BasicDataSource();
 		String driver = prop.getProperty("event.rdb.driver");
 		String url = prop.getProperty("event.rdb.url");
 		String username = prop.getProperty("event.rdb.username");
 		String passwd = prop.getProperty("event.rdb.passwd");
+
+        if (isEncrypted) {
+            String publicKey = prop.getProperty("event.rdb.passwd.publickey");
+            if (Strings.isNullOrEmpty(publicKey)) {
+                passwd = SecurityUtil.decrypt(passwd);
+            } else {
+                passwd = SecurityUtil.decrypt(publicKey, passwd);
+            }
+        }
+
 		if ((driver == null) || (url == null) || (username == null) || (passwd == null)) {
 			return null;
 		}

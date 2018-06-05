@@ -1,13 +1,13 @@
 ## elastic-job 注解实现
 -----
-项目示例应用地址：[http://101.95.139.62:9838/architecture/elastic-job-sample/tree/master/elasticjob-annotation-sample](http://101.95.139.62:9838/architecture/elastic-job-sample/tree/master/elasticjob-annotation-sample)
+Elastic-job-lite地址：[https://github.com/elasticjob/elastic-job-lite](https://github.com/elasticjob/elastic-job-lite)
 -----
 ### 使用方式:java
 **[注]：** 需在 *src/main/resources* 目录创建 **job.properties** 文件。
 内容如下：
 ```xml
 #值为项目中作业类所在的包名
-context.scan.base-package = com.ane56.job
+context.scan.base-package = com.mioz.job
 ```
 在maven的pom.xml 文件中指定mainClass
 内容如下：
@@ -57,9 +57,9 @@ context.scan.base-package = com.ane56.job
 **[注]：** 需在 *src/main/resources* 目录创建 **job.properties** 文件。
 ```xml
 #值为项目中作业类所在的包名
-context.scan.base-package = com.ane56.job
+context.scan.base-package = com.mioz.job
 ```
 在spring配置xml中添加bean配置，内容如下：
 ```xml
-	<beans id="ejMainClass" class="com.mioz.elasticjob.annotation.Main" init-method="mian" />
+<beans id="ejMainClass" class="com.mioz.elasticjob.annotation.Main" init-method="mian" />
 ```
