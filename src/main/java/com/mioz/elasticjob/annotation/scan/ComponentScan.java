@@ -45,7 +45,6 @@ public class ComponentScan {
 	/**
 	 * 获取指定包路径下的所有类
 	 * @param packageName
-	 * @return
 	 */
 	public static void scan(String packageName) {
 		if(packageName == null || packageName.isEmpty()) {

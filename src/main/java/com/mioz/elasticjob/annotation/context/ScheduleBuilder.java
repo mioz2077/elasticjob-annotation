@@ -59,7 +59,6 @@ public class ScheduleBuilder {
 	
 	/**
 	 * Declare build: 构建作业. 
-	 * @author Bingjie Wei 
 	 * Date 2017年9月30日 下午4:23:14 void
 	 */
 	public static void build() {
